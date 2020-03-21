@@ -2,10 +2,11 @@ package com.gatech.fabbadgetest.domain.usecases
 
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.repositories.message.MessageRepository
+import io.reactivex.Single
 
 class GetMessages(private val messageRepository: MessageRepository) : UseCase() {
 
-    fun execute(): ResponseValue {
+    fun execute(): Single<ResponseValue> {
         return messageRepository.getMessages().map { response ->
             ResponseValue(response.data.messages.map { message ->
                 ChatMessageModel.convertToModel(message)

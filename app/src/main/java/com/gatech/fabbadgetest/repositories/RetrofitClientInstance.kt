@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClientInstance {
     private var retrofitInstance: Retrofit
-    val API_BASE_URL = ""
+    val API_BASE_URL = "http://192.168.2.101:3000/"
 
     init {
         val logging: HttpLoggingInterceptor = HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.HEADERS)
+            .setLevel(HttpLoggingInterceptor.Level.BODY)
 
         val httpClient: OkHttpClient.Builder = OkHttpClient.Builder()
             .callTimeout(2, TimeUnit.MINUTES)

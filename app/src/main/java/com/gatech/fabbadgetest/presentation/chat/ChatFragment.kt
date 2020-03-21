@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.gatech.fabbadgetest.Injection
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.ViewProvider
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
@@ -20,6 +21,7 @@ interface ChatView {
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun notifyDataSetChanged()
     fun notifyItemInserted(position: Int, afterNotify: () -> Unit)
+    fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit)
     fun scrollToPosition(position: Int)
     fun hideKeyboard()
 }
@@ -30,11 +32,7 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter = ChatPresenterImpl(
-            provideGetMessages(),
-            providePostMessage(),
-            provideScheduleProvider()
-        )
+        presenter = Injection.provideChatPresenter()
     }
 
     override fun onCreateView(
@@ -53,6 +51,7 @@ class ChatFragment : Fragment(), ChatView {
             etInputText.text.clear()
             presenter?.onClickSend(text)
         }
+        presenter?.loadInitial()
     }
 
     override fun onResume() {
@@ -88,6 +87,11 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun notifyItemInserted(position: Int, afterNotify: () -> Unit) {
         chatListView?.adapter?.notifyItemInserted(position)
+        afterNotify.invoke()
+    }
+
+    override fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit) {
+        chatListView.adapter?.notifyItemRangeInserted(position, itemCount)
         afterNotify.invoke()
     }
 

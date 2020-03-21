@@ -1,5 +1,6 @@
 package com.gatech.fabbadgetest.presentation.chat
 
+import android.annotation.SuppressLint
 import com.gatech.fabbadgetest.BaseSchedulerProvider
 import com.gatech.fabbadgetest.ViewProvider
 import com.gatech.fabbadgetest.presentation.chat.lists.ChatViewType
@@ -10,6 +11,7 @@ import com.gatech.fabbadgetest.domain.models.ModelHelper.Companion.generateChatM
 import com.gatech.fabbadgetest.domain.models.ModelHelper.Companion.generateChatModels
 import com.gatech.fabbadgetest.domain.usecases.GetMessages
 import com.gatech.fabbadgetest.domain.usecases.PostMessage
+import timber.log.Timber
 
 interface ChatPresenter {
     fun takeView(view: ChatView)
@@ -19,12 +21,13 @@ interface ChatPresenter {
     fun onBindSendViewHolder(holder: ViewProvider, position: Int)
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int)
     fun onClickSend(text: String)
+    fun loadInitial()
 }
 
 class ChatPresenterImpl(
-    getMessages: GetMessages,
-    postMessage: PostMessage,
-    scheduler: BaseSchedulerProvider
+    private val getMessages: GetMessages,
+    private val postMessage: PostMessage,
+    private val scheduler: BaseSchedulerProvider
 ) : ChatPresenter {
 
     private var view: ChatView? = null
@@ -32,7 +35,6 @@ class ChatPresenterImpl(
 
     override fun takeView(view: ChatView) {
         this.view = view
-        initData()
     }
 
     override fun dropView() {
@@ -55,19 +57,41 @@ class ChatPresenterImpl(
         view?.onBindSendViewHolder(holder, position, data)
     }
 
+    @SuppressLint("CheckResult")
     override fun onClickSend(text: String) {
         if (text.isEmpty()) return
-        chatList.add(generateChatMessageModel(text, ChatViewType.SENDER.type))
-
-        val position = chatList.size - 1
-        view?.notifyItemInserted(position) {
-            view?.scrollToPosition(position)
-        }
+        postMessage.execute(text)
+            .observeOn(scheduler.ui())
+            .subscribeOn(scheduler.io())
+            .subscribe(
+                { response ->
+                    chatList.add(ChatMessageModel(text, ChatViewType.SENDER.type))
+                    chatList.add(response.message)
+                    val position = chatList.size - 1
+                    view?.notifyItemRangeInserted(chatList.size - 2, 2) {
+                        view?.scrollToPosition(position)
+                    }
+                }, {
+                    Timber.e(it)
+                }
+            )
     }
 
-    private fun initData() {
-        chatList = generateChatModels(1500).toMutableList()
-        view?.notifyDataSetChanged()
-        view?.scrollToPosition(chatList.size - 1)
+    @SuppressLint("CheckResult")
+    override fun loadInitial() {
+        getMessages.execute()
+            .observeOn(scheduler.ui())
+            .subscribeOn(scheduler.io())
+            .subscribe(
+                { response ->
+                    chatList = response.messages.toMutableList()
+                    view?.notifyDataSetChanged()
+                    view?.scrollToPosition(chatList.size - 1)
+                }, {
+                    Timber.e(it)
+                }
+            )
+        //chatList = generateChatModels(1500).toMutableList()
+
     }
 }

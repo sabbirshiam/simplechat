@@ -19,7 +19,7 @@ interface MessageService {
     @GET("messages")
     fun getMessages(): Single<MessagesResponse>
 
-    @POST("messages")
+    @POST("message")
     fun postMessage(
         @Body body: MultipartBody
     ): Single<MessageResponse>
