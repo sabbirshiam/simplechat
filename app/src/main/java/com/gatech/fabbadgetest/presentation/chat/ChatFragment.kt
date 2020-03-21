@@ -24,14 +24,17 @@ interface ChatView {
     fun hideKeyboard()
 }
 
-class ChatFragment : Fragment(),
-    ChatView {
+class ChatFragment : Fragment(), ChatView {
 
     private var presenter: ChatPresenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter = ChatPresenterImpl()
+        presenter = ChatPresenterImpl(
+            provideGetMessages(),
+            providePostMessage(),
+            provideScheduleProvider()
+        )
     }
 
     override fun onCreateView(

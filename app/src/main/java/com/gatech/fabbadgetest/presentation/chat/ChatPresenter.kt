@@ -1,5 +1,6 @@
 package com.gatech.fabbadgetest.presentation.chat
 
+import com.gatech.fabbadgetest.BaseSchedulerProvider
 import com.gatech.fabbadgetest.ViewProvider
 import com.gatech.fabbadgetest.presentation.chat.lists.ChatViewType
 import com.gatech.fabbadgetest.presentation.chat.lists.ChatViewType.Companion.findByType
@@ -7,6 +8,8 @@ import com.gatech.fabbadgetest.domain.models.ChatBaseModel
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.domain.models.ModelHelper.Companion.generateChatMessageModel
 import com.gatech.fabbadgetest.domain.models.ModelHelper.Companion.generateChatModels
+import com.gatech.fabbadgetest.domain.usecases.GetMessages
+import com.gatech.fabbadgetest.domain.usecases.PostMessage
 
 interface ChatPresenter {
     fun takeView(view: ChatView)
@@ -18,7 +21,11 @@ interface ChatPresenter {
     fun onClickSend(text: String)
 }
 
-class ChatPresenterImpl : ChatPresenter {
+class ChatPresenterImpl(
+    getMessages: GetMessages,
+    postMessage: PostMessage,
+    scheduler: BaseSchedulerProvider
+) : ChatPresenter {
 
     private var view: ChatView? = null
     private var chatList = mutableListOf<ChatBaseModel>()
