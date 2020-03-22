@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.gatech.fabbadgetest.Injection
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.ViewProvider
+import com.gatech.fabbadgetest.domain.models.ChatHeaderModel
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -23,6 +24,7 @@ import java.net.URLDecoder
 
 
 interface ChatView {
+    fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun notifyDataSetChanged()
@@ -52,7 +54,6 @@ class ChatFragment : Fragment(), ChatView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initChatView()
-        initHeaderView()
         btnSend.setOnClickListener {
             // hideKeyboard() //enable this will causes ui glitch.
             val text = etInputText.text.toString()
@@ -60,20 +61,6 @@ class ChatFragment : Fragment(), ChatView {
             presenter?.onClickSend(text)
         }
         presenter?.loadInitial()
-    }
-
-    private fun initHeaderView() {
-        Glide.with(this)
-            .load(
-                URLDecoder.decode(
-                    "https://pbs.twimg.com/profile_images/578558726971371521/TEZwnCCV_400x400.jpeg",
-                    "UTF-8"
-                )
-            )
-            .centerCrop()
-            .apply(circleCropTransform())
-            .into(topHeaderImg)
-
     }
 
     override fun onResume() {
@@ -109,6 +96,14 @@ class ChatFragment : Fragment(), ChatView {
         })
     }
 
+    override fun onBindHeaderViewHolder(
+        holder: ViewProvider,
+        position: Int,
+        data: ChatHeaderModel
+    ) {
+        (holder.getView() as? ChatHeaderView)?.onBindData(data)
+    }
+
     override fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel) {
         (holder.getView() as? ChatSenderTextView)?.onBindData(data)
     }
@@ -142,12 +137,6 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun scrollToPosition(position: Int) {
         //chatListView.smoothScrollToPosition(position) // large dataset smoothScrollposition shows laggines..
-        val layoutManager = chatListView.layoutManager
-        val visibleItemCount = layoutManager?.childCount
-        val totalItemCount = layoutManager?.itemCount
-        val pastVisibleItems = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        Timber.e("visibleItemCount $visibleItemCount totalItemCount $totalItemCount pastVisibleItems $pastVisibleItems position $position")
-        mainAppbar.setExpanded(false)
         chatListView.scrollToPosition(position)
     }
 
@@ -162,6 +151,10 @@ class ChatFragment : Fragment(), ChatView {
         chatListView.adapter =
             ChatViewAdapter(
                 object : ContentCreator {
+                    override fun createHeaderView(context: Context): View {
+                        return ChatHeaderView(context)
+                    }
+
                     override fun createReceiverView(context: Context): View {
                         return ChatReceiverView(context)
                     }
@@ -176,6 +169,10 @@ class ChatFragment : Fragment(), ChatView {
                         presenter?.getItemViewType(position) ?: -1
                 },
                 object : ContentBinder {
+                    override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
+                        presenter?.onBindHeaderViewHolder(holder, position)
+                    }
+
                     override fun onBindSendViewHolder(holder: ViewProvider, position: Int) {
                         presenter?.onBindSendViewHolder(holder, position)
                     }

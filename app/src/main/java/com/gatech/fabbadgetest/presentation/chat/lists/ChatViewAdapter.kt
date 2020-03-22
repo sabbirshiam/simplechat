@@ -8,6 +8,7 @@ import com.gatech.fabbadgetest.ViewProvider
 import java.lang.IllegalArgumentException
 
 interface ContentCreator {
+    fun createHeaderView(context: Context): View
     fun createReceiverView(context: Context): View
     fun createSenderView(context: Context): View
 }
@@ -18,6 +19,7 @@ interface ContentManager {
 }
 
 interface ContentBinder {
+    fun onBindHeaderViewHolder(holder: ViewProvider, position: Int)
     fun onBindSendViewHolder(holder: ViewProvider, position: Int)
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int)
 }
@@ -30,11 +32,15 @@ class ChatViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
-            ChatViewType.RECEIVER.viewType ->
+            ChatViewType.HEADER.viewType ->
+                ChatHeaderViewHolder(
+                    contentCreator.createHeaderView(parent.context)
+                )
+            ChatViewType.RECEIVER_TEXT_VIEW.viewType ->
                 ChatReceiverViewHolder(
                     contentCreator.createReceiverView(parent.context)
                 )
-            ChatViewType.SENDER.viewType ->
+            ChatViewType.SENDER_TEXT_VIEW.viewType ->
                 ChatSenderViewHolder(
                     contentCreator.createSenderView(parent.context)
                 )
@@ -45,9 +51,14 @@ class ChatViewAdapter(
     override fun getItemViewType(position: Int): Int = contentManager.getItemViewType(position)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
+            is ChatHeaderViewHolder -> bindListener.onBindHeaderViewHolder(holder, position)
             is ChatSenderViewHolder -> bindListener.onBindSendViewHolder(holder, position)
             is ChatReceiverViewHolder -> bindListener.onBindReceiveViewHolder(holder, position)
         }
+    }
+
+    class ChatHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+        override fun getView() = itemView as? ChatHeaderView
     }
 
     class ChatSenderViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
