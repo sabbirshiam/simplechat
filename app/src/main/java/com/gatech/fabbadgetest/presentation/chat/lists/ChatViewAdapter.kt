@@ -11,6 +11,7 @@ interface ContentCreator {
     fun createHeaderView(context: Context): View
     fun createIncomingTextView(context: Context): View
     fun createOutgoingTextView(context: Context): View
+    fun createOutgoingImageView(context: Context): View
 }
 
 interface ContentManager {
@@ -21,6 +22,7 @@ interface ContentManager {
 interface ContentBinder {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int)
     fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int)
+    fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int)
     fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int)
 }
 
@@ -44,6 +46,10 @@ class ChatViewAdapter(
                 ChatOutgoingTextViewHolder(
                     contentCreator.createOutgoingTextView(parent.context)
                 )
+            ChatViewType.OUTGOING_IMAGE_VIEW.viewType ->
+                ChatOutgoingImageViewHolder(
+                    contentCreator.createOutgoingImageView(parent.context)
+                )
             else -> throw IllegalArgumentException()
         }
 
@@ -54,6 +60,7 @@ class ChatViewAdapter(
             is ChatHeaderViewHolder -> bindListener.onBindHeaderViewHolder(holder, position)
             is ChatOutgoingTextViewHolder -> bindListener.onBindOutgoingTextViewHolder(holder, position)
             is ChatIncomingTextViewHolder -> bindListener.onBindIncomingTextViewHolder(holder, position)
+            is ChatOutgoingImageViewHolder -> bindListener.onBindOutgoingImageViewHolder(holder, position)
         }
     }
 
@@ -67,5 +74,9 @@ class ChatViewAdapter(
 
     class ChatIncomingTextViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatIncomingTextView
+    }
+
+    class ChatOutgoingImageViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+        override fun getView() = itemView as? ChatOutgoingImageView
     }
 }

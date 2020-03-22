@@ -18,8 +18,9 @@ interface ChatPresenter {
     fun getItemCount(): Int
     fun getItemViewType(position: Int): Int
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int)
-    fun onBindSendViewHolder(holder: ViewProvider, position: Int)
-    fun onBindReceiveViewHolder(holder: ViewProvider, position: Int)
+    fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int)
+    fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int)
+    fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int)
     fun onClickSend(text: String)
     fun loadInitial()
     fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int)
@@ -44,7 +45,12 @@ class ChatPresenterImpl(
     }
 
     override fun getItemCount(): Int = chatList.size
-    override fun getItemViewType(position: Int): Int = findByType(chatList[position].type).viewType
+    override fun getItemViewType(position: Int): Int {
+
+        //TODO now only for testing check with image url is null or not and return view type.
+        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+        else findByType(chatList[position].type).viewType
+    }
 
     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
         val data = chatList[position] as? ChatHeaderModel
@@ -52,16 +58,22 @@ class ChatPresenterImpl(
         view?.onBindHeaderViewHolder(holder, position, data)
     }
 
-    override fun onBindReceiveViewHolder(holder: ViewProvider, position: Int) {
+    override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
         val data = chatList[position] as? ChatMessageModel
         data ?: return
         view?.onBindReceiveViewHolder(holder, position, data)
     }
 
-    override fun onBindSendViewHolder(holder: ViewProvider, position: Int) {
+    override fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int) {
         val data = chatList[position] as? ChatMessageModel
         data ?: return
         view?.onBindSendViewHolder(holder, position, data)
+    }
+
+    override fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int) {
+        val data = chatList[position] as? ChatMessageModel
+        data ?: return
+        view?.onBindOutgoingImageViewHolder(holder, position, data)
     }
 
     @SuppressLint("CheckResult")
@@ -107,26 +119,26 @@ class ChatPresenterImpl(
     @SuppressLint("CheckResult")
     override fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int) {
         if (!loading) {
-                loading = true
-                getMessages.executeBefore()
-                    .observeOn(scheduler.ui())
-                    .subscribeOn(scheduler.io())
-                    .subscribe(
-                        { response ->
-                            if(response.messages.isNotEmpty()) {
-                                chatList.addAll(1, response.messages.toMutableList())
-                                //view?.notifyDataSetChanged()
-                                //loading = false
-                                view?.notifyItemRangeInserted(1, response.messages.size) {
-                                    loading = false
-                                }
+            loading = true
+            getMessages.executeBefore()
+                .observeOn(scheduler.ui())
+                .subscribeOn(scheduler.io())
+                .subscribe(
+                    { response ->
+                        if (response.messages.isNotEmpty()) {
+                            chatList.addAll(1, response.messages.toMutableList())
+                            //view?.notifyDataSetChanged()
+                            //loading = false
+                            view?.notifyItemRangeInserted(1, response.messages.size) {
+                                loading = false
                             }
-                            //view?.scrollToPosition(chatList.size - 1)
-
-                        }, {
-                            Timber.e(it)
                         }
-                    )
+                        //view?.scrollToPosition(chatList.size - 1)
+
+                    }, {
+                        Timber.e(it)
+                    }
+                )
         }
     }
 }

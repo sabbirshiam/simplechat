@@ -23,6 +23,7 @@ interface ChatView {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
+    fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun notifyDataSetChanged()
     fun notifyItemInserted(position: Int, afterNotify: () -> Unit)
     fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit)
@@ -112,6 +113,14 @@ class ChatFragment : Fragment(), ChatView {
         (holder.getView() as? ChatIncomingTextView)?.onBindData(data)
     }
 
+    override fun onBindOutgoingImageViewHolder(
+        holder: ViewProvider,
+        position: Int,
+        data: ChatMessageModel
+    ) {
+        (holder.getView() as? ChatOutgoingImageView)?.onBindData(data)
+    }
+
     override fun notifyDataSetChanged() {
         chatListView?.adapter?.notifyDataSetChanged()
     }
@@ -158,6 +167,10 @@ class ChatFragment : Fragment(), ChatView {
                     override fun createOutgoingTextView(context: Context): View {
                         return ChatOutgoingTextView(context)
                     }
+
+                    override fun createOutgoingImageView(context: Context): View {
+                        return ChatOutgoingImageView(context)
+                    }
                 },
                 object : ContentManager {
                     override fun getItemCount(): Int = presenter?.getItemCount() ?: 0
@@ -170,11 +183,16 @@ class ChatFragment : Fragment(), ChatView {
                     }
 
                     override fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int) {
-                        presenter?.onBindSendViewHolder(holder, position)
+                        presenter?.onBindOutgoingTextViewHolder(holder, position)
+                    }
+
+                    override fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int
+                    ) {
+                        presenter?.onBindOutgoingImageViewHolder(holder, position)
                     }
 
                     override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
-                        presenter?.onBindReceiveViewHolder(holder, position)
+                        presenter?.onBindIncomingTextViewHolder(holder, position)
                     }
                 })
     }
