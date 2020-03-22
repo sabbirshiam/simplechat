@@ -7,13 +7,13 @@ import io.reactivex.Single
 import okhttp3.MultipartBody
 
 interface MessageRepository {
-    fun getMessages(): Single<MessagesResponse>
+    fun getMessages(limit: Int): Single<MessagesResponse>
     fun postMessage(message: String): Single<MessageResponse>
 }
 
 class MessageRepositoryImpl : MessageRepository {
-    override fun getMessages(): Single<MessagesResponse> {
-        return RetrofitClientInstance.messageService.getMessages()
+    override fun getMessages(limit: Int): Single<MessagesResponse> {
+        return RetrofitClientInstance.messageService.getMessages(limit)
     }
 
     override fun postMessage(message: String): Single<MessageResponse> {

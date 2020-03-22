@@ -7,6 +7,7 @@ import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MessageService {
     /*
@@ -17,7 +18,9 @@ interface MessageService {
      */
 
     @GET("messages")
-    fun getMessages(): Single<MessagesResponse>
+    fun getMessages(
+        @Query("limit") limit: Int = 10
+    ): Single<MessagesResponse>
 
     @POST("message")
     fun postMessage(

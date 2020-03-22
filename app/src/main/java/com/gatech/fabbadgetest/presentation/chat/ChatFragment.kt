@@ -9,12 +9,14 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.gatech.fabbadgetest.Injection
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.ViewProvider
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
+import timber.log.Timber
 
 interface ChatView {
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
@@ -24,6 +26,7 @@ interface ChatView {
     fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit)
     fun scrollToPosition(position: Int)
     fun hideKeyboard()
+    fun notifyItemInsert(position: Int, itemCount: Int, afterNotify: () -> Unit)
 }
 
 class ChatFragment : Fragment(), ChatView {
@@ -67,6 +70,24 @@ class ChatFragment : Fragment(), ChatView {
     private fun initChatView() {
         chatListView.adapter ?: initAdapter()
         (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
+        chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                Timber.e("dx $dx, dy $dy")
+                if(dy<0) {
+                    val layoutManager = (chatListView.layoutManager as LinearLayoutManager)
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+                    presenter?.loadHistory(visibleItemCount, pastVisibleItems)
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                Timber.e("state $newState, ")
+            }
+        })
     }
 
     override fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel) {
@@ -92,6 +113,11 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit) {
         chatListView.adapter?.notifyItemRangeInserted(position, itemCount)
+        afterNotify.invoke()
+    }
+
+    override fun notifyItemInsert(position: Int, itemCount: Int, afterNotify: () -> Unit) {
+        chatListView.adapter?.notifyItemInserted(position)
         afterNotify.invoke()
     }
 

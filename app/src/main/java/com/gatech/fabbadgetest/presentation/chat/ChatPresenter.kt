@@ -22,6 +22,7 @@ interface ChatPresenter {
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int)
     fun onClickSend(text: String)
     fun loadInitial()
+    fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int)
 }
 
 class ChatPresenterImpl(
@@ -32,6 +33,7 @@ class ChatPresenterImpl(
 
     private var view: ChatView? = null
     private var chatList = mutableListOf<ChatBaseModel>()
+    private var loading = false
 
     override fun takeView(view: ChatView) {
         this.view = view
@@ -79,7 +81,7 @@ class ChatPresenterImpl(
 
     @SuppressLint("CheckResult")
     override fun loadInitial() {
-        getMessages.execute()
+        getMessages.executeInitial()
             .observeOn(scheduler.ui())
             .subscribeOn(scheduler.io())
             .subscribe(
@@ -93,5 +95,31 @@ class ChatPresenterImpl(
             )
         //chatList = generateChatModels(1500).toMutableList()
 
+    }
+
+    @SuppressLint("CheckResult")
+    override fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int) {
+        if (!loading) {
+            //if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                loading = true
+                getMessages.executeBefore()
+                    .observeOn(scheduler.ui())
+                    .subscribeOn(scheduler.io())
+                    .subscribe(
+                        { response ->
+                            if(response.messages.isNotEmpty()) {
+                                chatList.addAll(0, response.messages.toMutableList())
+                                view?.notifyItemRangeInserted(0, response.messages.size) {
+                                    loading = false
+                                }
+                            }
+                            //view?.scrollToPosition(chatList.size - 1)
+
+                        }, {
+                            Timber.e(it)
+                        }
+                    )
+           // }
+        }
     }
 }

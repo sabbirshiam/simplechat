@@ -4,9 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import kotlinx.android.synthetic.main.chat_receiver_item_view.view.*
+import java.net.URLDecoder
 
 class ChatReceiverView : ConstraintLayout {
     constructor(context: Context?) : super(context)
@@ -24,5 +27,11 @@ class ChatReceiverView : ConstraintLayout {
 
     fun onBindData(data: ChatMessageModel) {
         message_body.text = data.message
+
+        Glide.with(this)
+            .load(URLDecoder.decode("https://pbs.twimg.com/profile_images/578558726971371521/TEZwnCCV_400x400.jpeg", "UTF-8"))
+            .centerCrop()
+            .apply(circleCropTransform())
+            .into(chat_avatar)
     }
 }
