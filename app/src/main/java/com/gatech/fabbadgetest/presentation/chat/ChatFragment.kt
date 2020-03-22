@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.gatech.fabbadgetest.Injection
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.ViewProvider
@@ -17,6 +19,8 @@ import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
 import timber.log.Timber
+import java.net.URLDecoder
+
 
 interface ChatView {
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
@@ -48,13 +52,28 @@ class ChatFragment : Fragment(), ChatView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initChatView()
+        initHeaderView()
         btnSend.setOnClickListener {
-           // hideKeyboard() //enable this will causes ui glitch.
+            // hideKeyboard() //enable this will causes ui glitch.
             val text = etInputText.text.toString()
             etInputText.text.clear()
             presenter?.onClickSend(text)
         }
         presenter?.loadInitial()
+    }
+
+    private fun initHeaderView() {
+        Glide.with(this)
+            .load(
+                URLDecoder.decode(
+                    "https://pbs.twimg.com/profile_images/578558726971371521/TEZwnCCV_400x400.jpeg",
+                    "UTF-8"
+                )
+            )
+            .centerCrop()
+            .apply(circleCropTransform())
+            .into(topHeaderImg)
+
     }
 
     override fun onResume() {
@@ -69,12 +88,12 @@ class ChatFragment : Fragment(), ChatView {
 
     private fun initChatView() {
         chatListView.adapter ?: initAdapter()
-        (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
-        chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        //  (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
+        chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                Timber.e("dx $dx, dy $dy")
-                if(dy<0) {
+             //   Timber.e("dx $dx, dy $dy")
+                if (dy < 0) {
                     val layoutManager = (chatListView.layoutManager as LinearLayoutManager)
                     val visibleItemCount = layoutManager.childCount
                     val totalItemCount = layoutManager.itemCount
@@ -85,7 +104,7 @@ class ChatFragment : Fragment(), ChatView {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                Timber.e("state $newState, ")
+              //  Timber.e("state $newState, ")
             }
         })
     }
@@ -123,6 +142,12 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun scrollToPosition(position: Int) {
         //chatListView.smoothScrollToPosition(position) // large dataset smoothScrollposition shows laggines..
+        val layoutManager = chatListView.layoutManager
+        val visibleItemCount = layoutManager?.childCount
+        val totalItemCount = layoutManager?.itemCount
+        val pastVisibleItems = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        Timber.e("visibleItemCount $visibleItemCount totalItemCount $totalItemCount pastVisibleItems $pastVisibleItems position $position")
+        mainAppbar.setExpanded(false)
         chatListView.scrollToPosition(position)
     }
 
