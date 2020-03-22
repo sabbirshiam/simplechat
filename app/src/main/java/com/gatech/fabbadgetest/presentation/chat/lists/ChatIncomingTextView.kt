@@ -11,7 +11,7 @@ import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import kotlinx.android.synthetic.main.chat_receiver_item_view.view.*
 import java.net.URLDecoder
 
-class ChatReceiverView : ConstraintLayout {
+class ChatIncomingTextView : ConstraintLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :

@@ -8,7 +8,7 @@ import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import kotlinx.android.synthetic.main.chat_sender_item_view.view.*
 
-class ChatSenderTextView: LinearLayout {
+class ChatOutgoingTextView: LinearLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,attrs, defStyleAttr)

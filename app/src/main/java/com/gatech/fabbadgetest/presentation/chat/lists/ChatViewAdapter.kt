@@ -9,8 +9,8 @@ import java.lang.IllegalArgumentException
 
 interface ContentCreator {
     fun createHeaderView(context: Context): View
-    fun createReceiverView(context: Context): View
-    fun createSenderView(context: Context): View
+    fun createIncomingTextView(context: Context): View
+    fun createOutgoingTextView(context: Context): View
 }
 
 interface ContentManager {
@@ -20,8 +20,8 @@ interface ContentManager {
 
 interface ContentBinder {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int)
-    fun onBindSendViewHolder(holder: ViewProvider, position: Int)
-    fun onBindReceiveViewHolder(holder: ViewProvider, position: Int)
+    fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int)
+    fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int)
 }
 
 class ChatViewAdapter(
@@ -36,13 +36,13 @@ class ChatViewAdapter(
                 ChatHeaderViewHolder(
                     contentCreator.createHeaderView(parent.context)
                 )
-            ChatViewType.RECEIVER_TEXT_VIEW.viewType ->
-                ChatReceiverViewHolder(
-                    contentCreator.createReceiverView(parent.context)
+            ChatViewType.INCOMING_TEXT_VIEW.viewType ->
+                ChatIncomingTextViewHolder(
+                    contentCreator.createIncomingTextView(parent.context)
                 )
-            ChatViewType.SENDER_TEXT_VIEW.viewType ->
-                ChatSenderViewHolder(
-                    contentCreator.createSenderView(parent.context)
+            ChatViewType.OUTGOING_TEXT_VIEW.viewType ->
+                ChatOutgoingTextViewHolder(
+                    contentCreator.createOutgoingTextView(parent.context)
                 )
             else -> throw IllegalArgumentException()
         }
@@ -52,8 +52,8 @@ class ChatViewAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ChatHeaderViewHolder -> bindListener.onBindHeaderViewHolder(holder, position)
-            is ChatSenderViewHolder -> bindListener.onBindSendViewHolder(holder, position)
-            is ChatReceiverViewHolder -> bindListener.onBindReceiveViewHolder(holder, position)
+            is ChatOutgoingTextViewHolder -> bindListener.onBindOutgoingTextViewHolder(holder, position)
+            is ChatIncomingTextViewHolder -> bindListener.onBindIncomingTextViewHolder(holder, position)
         }
     }
 
@@ -61,11 +61,11 @@ class ChatViewAdapter(
         override fun getView() = itemView as? ChatHeaderView
     }
 
-    class ChatSenderViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
-        override fun getView() = itemView as? ChatSenderTextView
+    class ChatOutgoingTextViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+        override fun getView() = itemView as? ChatOutgoingTextView
     }
 
-    class ChatReceiverViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
-        override fun getView() = itemView as? ChatReceiverView
+    class ChatIncomingTextViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+        override fun getView() = itemView as? ChatIncomingTextView
     }
 }

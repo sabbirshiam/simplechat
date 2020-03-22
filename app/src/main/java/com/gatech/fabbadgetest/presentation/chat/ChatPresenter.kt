@@ -72,7 +72,7 @@ class ChatPresenterImpl(
             .subscribeOn(scheduler.io())
             .subscribe(
                 { response ->
-                    chatList.add(ChatMessageModel(text, ChatViewType.SENDER_TEXT_VIEW.type))
+                    chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type))
                     chatList.add(response.message)
                     val position = chatList.size - 1
                     view?.notifyItemRangeInserted(chatList.size - 2, 2) {

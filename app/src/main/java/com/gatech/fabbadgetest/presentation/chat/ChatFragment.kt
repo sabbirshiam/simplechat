@@ -10,8 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.gatech.fabbadgetest.Injection
 import com.gatech.fabbadgetest.R
 import com.gatech.fabbadgetest.ViewProvider
@@ -19,8 +17,6 @@ import com.gatech.fabbadgetest.domain.models.ChatHeaderModel
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
-import timber.log.Timber
-import java.net.URLDecoder
 
 
 interface ChatView {
@@ -105,7 +101,7 @@ class ChatFragment : Fragment(), ChatView {
     }
 
     override fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel) {
-        (holder.getView() as? ChatSenderTextView)?.onBindData(data)
+        (holder.getView() as? ChatOutgoingTextView)?.onBindData(data)
     }
 
     override fun onBindReceiveViewHolder(
@@ -113,7 +109,7 @@ class ChatFragment : Fragment(), ChatView {
         position: Int,
         data: ChatMessageModel
     ) {
-        (holder.getView() as? ChatReceiverView)?.onBindData(data)
+        (holder.getView() as? ChatIncomingTextView)?.onBindData(data)
     }
 
     override fun notifyDataSetChanged() {
@@ -155,12 +151,12 @@ class ChatFragment : Fragment(), ChatView {
                         return ChatHeaderView(context)
                     }
 
-                    override fun createReceiverView(context: Context): View {
-                        return ChatReceiverView(context)
+                    override fun createIncomingTextView(context: Context): View {
+                        return ChatIncomingTextView(context)
                     }
 
-                    override fun createSenderView(context: Context): View {
-                        return ChatSenderTextView(context)
+                    override fun createOutgoingTextView(context: Context): View {
+                        return ChatOutgoingTextView(context)
                     }
                 },
                 object : ContentManager {
@@ -173,11 +169,11 @@ class ChatFragment : Fragment(), ChatView {
                         presenter?.onBindHeaderViewHolder(holder, position)
                     }
 
-                    override fun onBindSendViewHolder(holder: ViewProvider, position: Int) {
+                    override fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int) {
                         presenter?.onBindSendViewHolder(holder, position)
                     }
 
-                    override fun onBindReceiveViewHolder(holder: ViewProvider, position: Int) {
+                    override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
                         presenter?.onBindReceiveViewHolder(holder, position)
                     }
                 })
