@@ -18,7 +18,6 @@ import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
 
-
 interface ChatView {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
@@ -91,6 +90,15 @@ class ChatFragment : Fragment(), ChatView {
               //  Timber.e("state $newState, ")
             }
         })
+
+        chatListView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+            if (bottom < oldBottom) {
+//                chatListView.postDelayed(
+//                    Runnable { chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0) }, 10
+//                )
+                chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0)
+            }
+        }
     }
 
     override fun onBindHeaderViewHolder(
