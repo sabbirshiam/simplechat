@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.gatech.fabbadgetest.R
@@ -31,6 +32,7 @@ class ChatOutgoingImageView : ConstraintLayout {
         val height = context.resources.getDimension(R.dimen.attach_image_height).toInt()
         Glide.with(this)
             .load(URLDecoder.decode("https://pbs.twimg.com/profile_images/578558726971371521/TEZwnCCV_400x400.jpeg", "UTF-8"))
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .override(width, height)
             .fitCenter()
             .dontTransform()
