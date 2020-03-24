@@ -17,6 +17,7 @@ import com.gatech.fabbadgetest.domain.models.ChatHeaderModel
 import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
+import timber.log.Timber
 
 interface ChatView {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
@@ -70,6 +71,8 @@ class ChatFragment : Fragment(), ChatView {
     }
 
     private fun initChatView() {
+        chatListView.setHasFixedSize(true)
+      //  chatListView.adapter?.setHasStableIds(true)
         chatListView.adapter ?: initAdapter()
         //  (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
         chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -91,14 +94,14 @@ class ChatFragment : Fragment(), ChatView {
             }
         })
 
-        chatListView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom < oldBottom) {
-//                chatListView.postDelayed(
-//                    Runnable { chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0) }, 10
-//                )
-                chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0)
-            }
-        }
+//        chatListView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+//            if (bottom < oldBottom) {
+////                chatListView.postDelayed(
+////                    Runnable { chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0) }, 10
+////                )
+//                chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0)
+//            }
+//        }
     }
 
     override fun onBindHeaderViewHolder(
@@ -139,6 +142,7 @@ class ChatFragment : Fragment(), ChatView {
     }
 
     override fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit) {
+        chatListView.itemAnimator = null
         chatListView.adapter?.notifyItemRangeInserted(position, itemCount)
         afterNotify.invoke()
     }
@@ -177,7 +181,9 @@ class ChatFragment : Fragment(), ChatView {
                     }
 
                     override fun createOutgoingImageView(context: Context): View {
-                        return ChatOutgoingImageView(context)
+                        return ChatOutgoingImageView(context).apply {
+                            setOnClickListener { Timber.e(" imageview:: $") }
+                        }
                     }
                 },
                 object : ContentManager {

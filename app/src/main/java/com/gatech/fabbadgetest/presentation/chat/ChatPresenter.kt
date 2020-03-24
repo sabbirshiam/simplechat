@@ -48,8 +48,9 @@ class ChatPresenterImpl(
     override fun getItemViewType(position: Int): Int {
 
         //TODO now only for testing check with image url is null or not and return view type.
-        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
-        else findByType(chatList[position].type).viewType
+//        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+//        else findByType(chatList[position].type).viewType
+        return findByType(chatList[position].type).viewType
     }
 
     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
@@ -98,42 +99,38 @@ class ChatPresenterImpl(
 
     @SuppressLint("CheckResult")
     override fun loadInitial() {
-        getMessages.executeInitial()
+        getMessages.executeLoadMessages()
             .observeOn(scheduler.ui())
             .subscribeOn(scheduler.io())
             .subscribe(
                 { response ->
-                    chatList = response.messages.toMutableList()
-                    chatList.add(0, ChatHeaderModel("", "from presenter", ChatViewType.HEADER.type))
-                    //if (chatList.isEmpty()) return@subscribe
+                    chatList.addAll(response.messages.toMutableList())
                     view?.notifyDataSetChanged()
                     view?.scrollToPosition(chatList.size - 1)
                 }, {
                     Timber.e(it)
                 }
             )
-        //chatList = generateChatModels(1500).toMutableList()
-
     }
 
     @SuppressLint("CheckResult")
     override fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int) {
-        if (!loading) {
+        if (!loading && (chatList[0] !is ChatHeaderModel)) {
             loading = true
-            getMessages.executeBefore()
+            getMessages.executeLoadMessages(10)
                 .observeOn(scheduler.ui())
                 .subscribeOn(scheduler.io())
                 .subscribe(
                     { response ->
                         if (response.messages.isNotEmpty()) {
-                            chatList.addAll(1, response.messages.toMutableList())
-                            //view?.notifyDataSetChanged()
-                            //loading = false
-                            view?.notifyItemRangeInserted(1, response.messages.size) {
-                                loading = false
+                            chatList.addAll(0, response.messages.toMutableList())
+                            view?.notifyItemRangeInserted(0, response.messages.size) {
+                                //loading = false
                             }
+                            //view?.notifyDataSetChanged()
                         }
-                        //view?.scrollToPosition(chatList.size - 1)
+                        loading = false
+                        view?.scrollToPosition(chatList.size - 1)
 
                     }, {
                         Timber.e(it)
