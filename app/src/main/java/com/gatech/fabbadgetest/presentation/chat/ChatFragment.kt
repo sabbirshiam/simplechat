@@ -18,6 +18,8 @@ import com.gatech.fabbadgetest.domain.models.ChatMessageModel
 import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.absoluteValue
 
 interface ChatView {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
@@ -35,6 +37,7 @@ interface ChatView {
 class ChatFragment : Fragment(), ChatView {
 
     private var presenter: ChatPresenter? = null
+    private var verticalScrollOffset = AtomicInteger(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,13 +74,20 @@ class ChatFragment : Fragment(), ChatView {
     }
 
     private fun initChatView() {
+//        chatListView.addItemDecoration(HeaderItemDecoration(chatListView) { itemPosition ->
+//           presenter?.isHeader(itemPosition) ?: false
+//        })
         chatListView.setHasFixedSize(true)
       //  chatListView.adapter?.setHasStableIds(true)
         chatListView.adapter ?: initAdapter()
         //  (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
         chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            var state = AtomicInteger(RecyclerView.SCROLL_STATE_IDLE)
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+              //  if (state.get() != RecyclerView.SCROLL_STATE_IDLE) {
+                    verticalScrollOffset.getAndAdd(dy)
+         //       }
              //   Timber.e("dx $dx, dy $dy")
                 if (dy < 0) {
                     val layoutManager = (chatListView.layoutManager as LinearLayoutManager)
@@ -91,17 +101,36 @@ class ChatFragment : Fragment(), ChatView {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
               //  Timber.e("state $newState, ")
+//                state.compareAndSet(RecyclerView.SCROLL_STATE_IDLE, newState)
+//                when (newState) {
+//                    RecyclerView.SCROLL_STATE_IDLE -> {
+//                        if (!state.compareAndSet(RecyclerView.SCROLL_STATE_SETTLING, newState)) {
+//                            state.compareAndSet(RecyclerView.SCROLL_STATE_DRAGGING, newState)
+//                        }
+//                    }
+//                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+//                        state.compareAndSet(RecyclerView.SCROLL_STATE_IDLE, newState)
+//                    }
+//                    RecyclerView.SCROLL_STATE_SETTLING -> {
+//                        state.compareAndSet(RecyclerView.SCROLL_STATE_DRAGGING, newState)
+//                    }
+//                }
             }
         })
 
-//        chatListView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-//            if (bottom < oldBottom) {
-////                chatListView.postDelayed(
-////                    Runnable { chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0) }, 10
-////                )
-//                chatListView.smoothScrollToPosition(chatListView.adapter?.itemCount ?: 0)
+        chatListView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+            val y = oldBottom - bottom
+            chatListView.scrollBy(0, bottom + 100)
+//            if (y.absoluteValue > 0) {
+//                chatListView.post {
+//                    if (y > 0 || verticalScrollOffset.get().absoluteValue >= y.absoluteValue) {
+//                        chatListView.scrollBy(0, bottom + 100)
+//                    } else {
+//                        chatListView.scrollBy(0, verticalScrollOffset.get())
+//                    }
+//                }
 //            }
-//        }
+        }
     }
 
     override fun onBindHeaderViewHolder(
