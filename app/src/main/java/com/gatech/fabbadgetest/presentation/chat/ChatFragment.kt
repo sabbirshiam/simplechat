@@ -237,6 +237,11 @@ class ChatFragment : Fragment(), ChatView {
                     override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
                         presenter?.onBindIncomingTextViewHolder(holder, position)
                     }
+                },
+                object : OnItemClickListener {
+                    override fun onItemClick(position: Int) {
+                        Timber.e("Item position:: $position")
+                    }
                 })
     }
 

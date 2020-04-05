@@ -48,9 +48,10 @@ class ChatPresenterImpl(
     override fun getItemViewType(position: Int): Int {
 
         //TODO now only for testing check with image url is null or not and return view type.
-//        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
-//        else findByType(chatList[position].type).viewType
-        return findByType(chatList[position].type).viewType
+        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+        else if (position == 2) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+        else findByType(chatList[position].type).viewType
+        //return findByType(chatList[position].type).viewType
     }
 
     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
@@ -88,7 +89,7 @@ class ChatPresenterImpl(
                     chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type))
                     chatList.add(response.message)
                     val position = chatList.size - 1
-                    view?.notifyItemRangeInserted(chatList.size - 2, 2) {
+                    view?.notifyItemRangeInserted(chatList.lastIndex, 2) {
                         view?.scrollToPosition(position)
                     }
                 }, {

@@ -26,30 +26,31 @@ interface ContentBinder {
     fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int)
 }
 
+interface OnItemClickListener {
+    fun onItemClick(position: Int)
+}
+
 class ChatViewAdapter(
     private val contentCreator: ContentCreator,
     private val contentManager: ContentManager,
-    private val bindListener: ContentBinder
+    private val bindListener: ContentBinder,
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
             ChatViewType.HEADER.viewType ->
                 ChatHeaderViewHolder(
-                    contentCreator.createHeaderView(parent.context)
-                )
+                    contentCreator.createHeaderView(parent.context), onItemClickListener)
             ChatViewType.INCOMING_TEXT_VIEW.viewType ->
                 ChatIncomingTextViewHolder(
-                    contentCreator.createIncomingTextView(parent.context)
-                )
+                    contentCreator.createIncomingTextView(parent.context), onItemClickListener)
             ChatViewType.OUTGOING_TEXT_VIEW.viewType ->
                 ChatOutgoingTextViewHolder(
-                    contentCreator.createOutgoingTextView(parent.context)
-                )
+                    contentCreator.createOutgoingTextView(parent.context), onItemClickListener)
             ChatViewType.OUTGOING_IMAGE_VIEW.viewType ->
                 ChatOutgoingImageViewHolder(
-                    contentCreator.createOutgoingImageView(parent.context)
-                )
+                    contentCreator.createOutgoingImageView(parent.context), onItemClickListener)
             else -> throw IllegalArgumentException()
         }
 
@@ -64,19 +65,31 @@ class ChatViewAdapter(
         }
     }
 
-    class ChatHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+    class ChatHeaderViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatHeaderView
+        init {
+            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+        }
     }
 
-    class ChatOutgoingTextViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+    class ChatOutgoingTextViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatOutgoingTextView
+        init {
+            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+        }
     }
 
-    class ChatIncomingTextViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+    class ChatIncomingTextViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatIncomingTextView
+        init {
+            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+        }
     }
 
-    class ChatOutgoingImageViewHolder(view: View) : RecyclerView.ViewHolder(view), ViewProvider {
+    class ChatOutgoingImageViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatOutgoingImageView
+        init {
+            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+        }
     }
 }
