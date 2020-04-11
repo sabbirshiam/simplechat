@@ -47,11 +47,14 @@ class ChatPresenterImpl(
 
     override fun getItemCount(): Int = chatList.size
     override fun getItemViewType(position: Int): Int {
-
-        //TODO now only for testing check with image url is null or not and return view type.
-        return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
-        else if (position == 2) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
-        else findByType(chatList[position].type).viewType
+        return when(chatList[position]) {
+            is ChatMessageModel -> {
+                val model = chatList[position] as ChatMessageModel
+                if(model.hasImageUrl()) return ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+                else findByType(chatList[position].type).viewType
+            }
+            else -> findByType(chatList[position].type).viewType
+        }
        // return findByType(chatList[position].type).viewType
     }
 
@@ -91,7 +94,7 @@ class ChatPresenterImpl(
             .subscribeOn(scheduler.io())
             .subscribe(
                 { response ->
-                    chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type))
+                    chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type, ""))
                     chatList.add(response.message)
                     val position = chatList.size - 1
                     view?.notifyItemRangeInserted(chatList.lastIndex, 2) {
