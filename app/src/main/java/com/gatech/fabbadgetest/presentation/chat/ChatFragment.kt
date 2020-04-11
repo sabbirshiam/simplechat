@@ -53,6 +53,7 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter?.loadInitial()
         initChatView()
         btnSend.setOnClickListener {
             // hideKeyboard() //enable this will causes ui glitch.
@@ -60,7 +61,6 @@ class ChatFragment : Fragment(), ChatView {
             etInputText.text.clear()
             presenter?.onClickSend(text)
         }
-        presenter?.loadInitial()
     }
 
     override fun onResume() {
@@ -77,7 +77,7 @@ class ChatFragment : Fragment(), ChatView {
 //        chatListView.addItemDecoration(HeaderItemDecoration(chatListView) { itemPosition ->
 //           presenter?.isHeader(itemPosition) ?: false
 //        })
-        chatListView.setHasFixedSize(true)
+        chatListView.setHasFixedSize(false)
       //  chatListView.adapter?.setHasStableIds(true)
         chatListView.adapter ?: initAdapter()
         //  (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
@@ -222,25 +222,30 @@ class ChatFragment : Fragment(), ChatView {
                 },
                 object : ContentBinder {
                     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
+                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindHeaderViewHolder(holder, position)
                     }
 
                     override fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int) {
+                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindOutgoingTextViewHolder(holder, position)
                     }
 
                     override fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int
                     ) {
+                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindOutgoingImageViewHolder(holder, position)
                     }
 
                     override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
+                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindIncomingTextViewHolder(holder, position)
                     }
                 },
                 object : OnItemClickListener {
                     override fun onItemClick(position: Int) {
                         Timber.e("Item position:: $position")
+                        presenter?.onItemClick(position)
                     }
                 })
     }

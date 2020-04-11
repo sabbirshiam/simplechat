@@ -24,6 +24,7 @@ interface ChatPresenter {
     fun onClickSend(text: String)
     fun loadInitial()
     fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int)
+    fun onItemClick(position: Int)
 }
 
 class ChatPresenterImpl(
@@ -51,7 +52,7 @@ class ChatPresenterImpl(
         return if (position == 5) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
         else if (position == 2) ChatViewType.OUTGOING_IMAGE_VIEW.viewType
         else findByType(chatList[position].type).viewType
-        //return findByType(chatList[position].type).viewType
+       // return findByType(chatList[position].type).viewType
     }
 
     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
@@ -76,6 +77,10 @@ class ChatPresenterImpl(
         val data = chatList[position] as? ChatMessageModel
         data ?: return
         view?.onBindOutgoingImageViewHolder(holder, position, data)
+    }
+
+    override fun onItemClick(position: Int) {
+        Timber.e("item Clicked:: ${(chatList[position] as ChatMessageModel).message}")
     }
 
     @SuppressLint("CheckResult")
@@ -105,6 +110,7 @@ class ChatPresenterImpl(
             .subscribeOn(scheduler.io())
             .subscribe(
                 { response ->
+                    Timber.e("initial response:: \n ${response.messages}")
                     chatList.addAll(response.messages.toMutableList())
                     view?.notifyDataSetChanged()
                     view?.scrollToPosition(chatList.size - 1)
@@ -128,10 +134,9 @@ class ChatPresenterImpl(
                             view?.notifyItemRangeInserted(0, response.messages.size) {
                                 //loading = false
                             }
-                            //view?.notifyDataSetChanged()
                         }
                         loading = false
-                        view?.scrollToPosition(chatList.size - 1)
+                       // view?.scrollToPosition(chatList.size - 1)
 
                     }, {
                         Timber.e(it)
