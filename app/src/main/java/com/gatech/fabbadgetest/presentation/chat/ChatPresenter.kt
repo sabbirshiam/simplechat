@@ -25,6 +25,7 @@ interface ChatPresenter {
     fun loadInitial()
     fun loadHistory(visibleItemCount: Int, pastVisibleItems: Int)
     fun onItemClick(position: Int)
+    fun onBindIncomingImageViewHolder(holder: ViewProvider, position: Int)
 }
 
 class ChatPresenterImpl(
@@ -50,7 +51,7 @@ class ChatPresenterImpl(
         return when(chatList[position]) {
             is ChatMessageModel -> {
                 val model = chatList[position] as ChatMessageModel
-                if(model.hasImageUrl()) return ChatViewType.OUTGOING_IMAGE_VIEW.viewType
+                if(model.hasImageUrl()) return ChatViewType.INCOMING_IMAGE_VIEW.viewType
                 else findByType(chatList[position].type).viewType
             }
             else -> findByType(chatList[position].type).viewType
@@ -80,6 +81,12 @@ class ChatPresenterImpl(
         val data = chatList[position] as? ChatMessageModel
         data ?: return
         view?.onBindOutgoingImageViewHolder(holder, position, data)
+    }
+
+    override fun onBindIncomingImageViewHolder(holder: ViewProvider, position: Int) {
+        val data = chatList[position] as? ChatMessageModel
+        data ?: return
+        view?.onBindIncomingImageViewHolder(holder, position, data)
     }
 
     override fun onItemClick(position: Int) {

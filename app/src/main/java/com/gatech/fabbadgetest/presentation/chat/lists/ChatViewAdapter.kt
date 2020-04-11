@@ -12,6 +12,7 @@ interface ContentCreator {
     fun createIncomingTextView(context: Context): View
     fun createOutgoingTextView(context: Context): View
     fun createOutgoingImageView(context: Context): View
+    fun createIncomingImageView(context: Context): View
 }
 
 interface ContentManager {
@@ -24,6 +25,7 @@ interface ContentBinder {
     fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int)
     fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int)
     fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int)
+    fun onBindIncomingImageViewHolder(holder: ViewProvider, position: Int)
 }
 
 interface OnItemClickListener {
@@ -51,6 +53,9 @@ class ChatViewAdapter(
             ChatViewType.OUTGOING_IMAGE_VIEW.viewType ->
                 ChatOutgoingImageViewHolder(
                     contentCreator.createOutgoingImageView(parent.context), onItemClickListener)
+            ChatViewType.INCOMING_IMAGE_VIEW.viewType ->
+                ChatIncomingImageViewHolder(
+                    contentCreator.createIncomingImageView(parent.context), onItemClickListener)
             else -> throw IllegalArgumentException()
         }
 
@@ -62,6 +67,7 @@ class ChatViewAdapter(
             is ChatOutgoingTextViewHolder -> bindListener.onBindOutgoingTextViewHolder(holder, position)
             is ChatIncomingTextViewHolder -> bindListener.onBindIncomingTextViewHolder(holder, position)
             is ChatOutgoingImageViewHolder -> bindListener.onBindOutgoingImageViewHolder(holder, position)
+            is ChatIncomingImageViewHolder -> bindListener.onBindIncomingImageViewHolder(holder, position)
         }
     }
 
@@ -88,6 +94,13 @@ class ChatViewAdapter(
 
     class ChatOutgoingImageViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatOutgoingImageView
+        init {
+            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+        }
+    }
+
+    class ChatIncomingImageViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
+        override fun getView() = itemView as? ChatIncomingImageView
         init {
             itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
         }

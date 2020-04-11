@@ -26,6 +26,7 @@ interface ChatView {
     fun onBindSendViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun onBindReceiveViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
+    fun onBindIncomingImageViewHolder(holder: ViewProvider, position: Int, data: ChatMessageModel)
     fun notifyDataSetChanged()
     fun notifyItemInserted(position: Int, afterNotify: () -> Unit)
     fun notifyItemRangeInserted(position: Int, itemCount: Int, afterNotify: () -> Unit)
@@ -161,6 +162,14 @@ class ChatFragment : Fragment(), ChatView {
         (holder.getView() as? ChatOutgoingImageView)?.onBindData(data)
     }
 
+    override fun onBindIncomingImageViewHolder(
+        holder: ViewProvider,
+        position: Int,
+        data: ChatMessageModel
+    ) {
+        (holder.getView() as? ChatIncomingImageView)?.onBindData(data)
+    }
+
     override fun notifyDataSetChanged() {
         chatListView?.adapter?.notifyDataSetChanged()
     }
@@ -214,6 +223,12 @@ class ChatFragment : Fragment(), ChatView {
                             setOnClickListener { Timber.e(" imageview:: $") }
                         }
                     }
+
+                    override fun createIncomingImageView(context: Context): View {
+                        return ChatIncomingImageView(context).apply {
+                            setOnClickListener { Timber.e(" imageview:: $") }
+                        }
+                    }
                 },
                 object : ContentManager {
                     override fun getItemCount(): Int = presenter?.getItemCount() ?: 0
@@ -236,6 +251,13 @@ class ChatFragment : Fragment(), ChatView {
 
                     override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
                         presenter?.onBindIncomingTextViewHolder(holder, position)
+                    }
+
+                    override fun onBindIncomingImageViewHolder(
+                        holder: ViewProvider,
+                        position: Int
+                    ) {
+                        presenter?.onBindIncomingImageViewHolder(holder, position)
                     }
                 },
                 object : OnItemClickListener {
