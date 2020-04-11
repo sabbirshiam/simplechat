@@ -11,7 +11,7 @@
         android:minHeight="50dp"
         android:layout_marginStart="114dp"
         android:layout_gravity="end">
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/outgoingImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
