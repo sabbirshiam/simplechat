@@ -11,14 +11,16 @@ class ModelHelper {
                     list.add(
                         generateChatMessageModel(
                             "sender",
-                            1
+                            1,
+                            ""
                         )
                     )
                 } else {
                     list.add(
                         generateChatMessageModel(
                             "receiver",
-                            2
+                            2,
+                            ""
                         )
                     )
                 }
@@ -26,11 +28,12 @@ class ModelHelper {
             return list
         }
 
-        fun generateChatMessageModel(message: String, type: Int): ChatMessageModel {
+        fun generateChatMessageModel(message: String, type: Int, imageUrl: String): ChatMessageModel {
             val random = Random().nextLong()
             return ChatMessageModel(
                 message,
-                type
+                type,
+                imageUrl
             )
         }
     }
