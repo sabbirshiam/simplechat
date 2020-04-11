@@ -222,23 +222,19 @@ class ChatFragment : Fragment(), ChatView {
                 },
                 object : ContentBinder {
                     override fun onBindHeaderViewHolder(holder: ViewProvider, position: Int) {
-                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindHeaderViewHolder(holder, position)
                     }
 
                     override fun onBindOutgoingTextViewHolder(holder: ViewProvider, position: Int) {
-                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindOutgoingTextViewHolder(holder, position)
                     }
 
                     override fun onBindOutgoingImageViewHolder(holder: ViewProvider, position: Int
                     ) {
-                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindOutgoingImageViewHolder(holder, position)
                     }
 
                     override fun onBindIncomingTextViewHolder(holder: ViewProvider, position: Int) {
-                        Timber.e("onBind Item position:: $position")
                         presenter?.onBindIncomingTextViewHolder(holder, position)
                     }
                 },
