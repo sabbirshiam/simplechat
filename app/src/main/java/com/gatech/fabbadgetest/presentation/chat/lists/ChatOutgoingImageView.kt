@@ -30,9 +30,6 @@ class ChatOutgoingImageView : ConstraintLayout {
 
         val width = context.resources.getDimension(R.dimen.attach_image_width).toInt()
         val height = context.resources.getDimension(R.dimen.attach_image_height).toInt()
-        var squaueUrl = "https://www5.lunapic.com/do-not-link-here-use-hosting-instead/158566666318389813?7298636021"
-        var landscapeUrl = "https://vastphotos.com/files/uploads/photos/10592/lake-at-twilight-l.jpg"
-        var portraitUrl = "https://images.squarespace-cdn.com/content/v1/524356bae4b04817bad65d5c/1555354881905-G6X8W8B0SZY2PFQJ1LTL/ke17ZwdGBToddI8pDm48kA-E3A5nZWA4inW_WqcGKdwUqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8PaoYXhp6HxIwZIk7-Mi3Tsic-L2IOPH3Dwrhl-Ne3Z2Qs5oYuN4O0sxBD_kPJGPstUprkcqQ60xRmZ9Cmzp5ccKMshLAGzx4R3EDFOm1kBS/casey_baugh_studio_painting.png"
 
         val radius = resources.getDimension(R.dimen.default_corner_radius)
         outgoingImage.shapeAppearanceModel = outgoingImage.shapeAppearanceModel
@@ -41,9 +38,8 @@ class ChatOutgoingImageView : ConstraintLayout {
             .setTopLeftCorner(CornerFamily.ROUNDED, radius)
             .setBottomLeftCorner(CornerFamily.ROUNDED, radius)
             .build()
-        Timber.d("size:: ${Target.SIZE_ORIGINAL}")
         Glide.with(this)
-            .load(portraitUrl)
+            .load(data.imageUrl)
             .into(outgoingImage)
 
 
