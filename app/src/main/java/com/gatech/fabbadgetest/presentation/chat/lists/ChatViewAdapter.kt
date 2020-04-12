@@ -43,7 +43,7 @@ class ChatViewAdapter(
         when (viewType) {
             ChatViewType.HEADER.viewType ->
                 ChatHeaderViewHolder(
-                    contentCreator.createHeaderView(parent.context), onItemClickListener)
+                    contentCreator.createHeaderView(parent.context), null)
             ChatViewType.INCOMING_TEXT_VIEW.viewType ->
                 ChatIncomingTextViewHolder(
                     contentCreator.createIncomingTextView(parent.context), onItemClickListener)
@@ -71,10 +71,10 @@ class ChatViewAdapter(
         }
     }
 
-    class ChatHeaderViewHolder(view: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(view), ViewProvider {
+    class ChatHeaderViewHolder(view: View, onItemClickListener: OnItemClickListener?) : RecyclerView.ViewHolder(view), ViewProvider {
         override fun getView() = itemView as? ChatHeaderView
         init {
-            itemView.setOnClickListener { onItemClickListener.onItemClick(adapterPosition) }
+            itemView.setOnClickListener { onItemClickListener?.onItemClick(adapterPosition) }
         }
     }
 
