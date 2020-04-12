@@ -19,7 +19,7 @@ import com.gatech.fabbadgetest.presentation.chat.lists.*
 import kotlinx.android.synthetic.main.fragment_chat.*
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.absoluteValue
+
 
 interface ChatView {
     fun onBindHeaderViewHolder(holder: ViewProvider, position: Int, data: ChatHeaderModel)
@@ -81,6 +81,8 @@ class ChatFragment : Fragment(), ChatView {
         chatListView.setHasFixedSize(false)
       //  chatListView.adapter?.setHasStableIds(true)
         chatListView.adapter ?: initAdapter()
+        chatListView.layoutManager?.isItemPrefetchEnabled = true
+        (chatListView.layoutManager as LinearLayoutManager).initialPrefetchItemCount = 3
         //  (chatListView.layoutManager as LinearLayoutManager).stackFromEnd = true
         chatListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             var state = AtomicInteger(RecyclerView.SCROLL_STATE_IDLE)
@@ -90,17 +92,19 @@ class ChatFragment : Fragment(), ChatView {
                     verticalScrollOffset.getAndAdd(dy)
          //       }
              //   Timber.e("dx $dx, dy $dy")
-                if (dy < 0) {
-                    val layoutManager = (chatListView.layoutManager as LinearLayoutManager)
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-                    presenter?.loadHistory(visibleItemCount, pastVisibleItems)
-                }
+//                if (dy < 0) {
+//                    val layoutManager = (chatListView.layoutManager as LinearLayoutManager)
+//                    val visibleItemCount = layoutManager.childCount
+//                    val totalItemCount = layoutManager.itemCount
+//                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+//                    presenter?.loadHistory(visibleItemCount, pastVisibleItems)
+//                }
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                val itemno: Int = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && itemno == 0)  presenter?.loadHistory(0, 0)
               //  Timber.e("state $newState, ")
 //                state.compareAndSet(RecyclerView.SCROLL_STATE_IDLE, newState)
 //                when (newState) {
