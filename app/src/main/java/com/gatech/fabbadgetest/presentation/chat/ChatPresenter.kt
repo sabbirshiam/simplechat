@@ -141,7 +141,7 @@ class ChatPresenterImpl(
                     { response ->
                         if (response.messages.isNotEmpty()) {
                             chatList.addAll(0, response.messages.toMutableList())
-                            view?.notifyItemRangeInserted(0, response.messages.size) {
+                            view?.notifyItemRangeInserted(0, response.messages.lastIndex) {
                                 //loading = false
                             }
                         }
