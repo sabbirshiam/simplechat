@@ -3,7 +3,7 @@ package com.gatech.fabbadgetest.presentation.chat.lists
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.gatech.fabbadgetest.R
@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.chat_incoming_image_view.view.*
 import java.net.URLDecoder
 
 
-class ChatIncomingImageView : LinearLayout {
+class ChatIncomingImageView : RelativeLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,attrs, defStyleAttr)
@@ -45,6 +45,8 @@ class ChatIncomingImageView : LinearLayout {
             .build()
         Glide.with(this)
             .load(data.imageUrl)
+            .thumbnail(0.1f)
             .into(incomingImage)
+
     }
 }
