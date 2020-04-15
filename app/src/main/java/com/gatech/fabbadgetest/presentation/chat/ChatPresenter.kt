@@ -115,6 +115,7 @@ class ChatPresenterImpl(
 
     @SuppressLint("CheckResult")
     override fun loadInitial() {
+        if (chatList.isNotEmpty()) return
         getMessages.executeLoadMessages()
             .observeOn(scheduler.ui())
             .subscribeOn(scheduler.io())

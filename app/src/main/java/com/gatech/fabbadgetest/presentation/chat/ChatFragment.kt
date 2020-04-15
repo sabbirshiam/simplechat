@@ -54,7 +54,6 @@ class ChatFragment : Fragment(), ChatView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter?.loadInitial()
         initChatView()
         btnSend.setOnClickListener {
             // hideKeyboard() //enable this will causes ui glitch.
@@ -67,6 +66,7 @@ class ChatFragment : Fragment(), ChatView {
     override fun onResume() {
         super.onResume()
         presenter?.takeView(this@ChatFragment)
+        presenter?.loadInitial()
     }
 
     override fun onPause() {
