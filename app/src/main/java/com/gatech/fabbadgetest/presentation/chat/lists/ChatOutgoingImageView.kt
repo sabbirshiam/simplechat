@@ -3,6 +3,7 @@ package com.gatech.fabbadgetest.presentation.chat.lists
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
