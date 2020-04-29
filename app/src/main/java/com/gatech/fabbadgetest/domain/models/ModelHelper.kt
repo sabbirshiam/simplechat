@@ -33,7 +33,9 @@ class ModelHelper {
             return ChatMessageModel(
                 message,
                 type,
-                imageUrl
+                imageUrl,
+                100,
+                100
             )
         }
     }

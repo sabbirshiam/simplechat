@@ -101,7 +101,7 @@ class ChatPresenterImpl(
             .subscribeOn(scheduler.io())
             .subscribe(
                 { response ->
-                    chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type, ""))
+                    chatList.add(ChatMessageModel(text, ChatViewType.OUTGOING_TEXT_VIEW.type, "", 100, 100))
                     chatList.add(response.message)
                     val position = chatList.size - 1
                     view?.notifyItemRangeInserted(chatList.lastIndex, 2) {
@@ -122,6 +122,7 @@ class ChatPresenterImpl(
             .subscribe(
                 { response ->
                     Timber.e("initial response:: \n ${response.messages}")
+                    chatList.takeLast(10)
                     chatList.addAll(response.messages.toMutableList())
                     view?.notifyDataSetChanged()
                     view?.scrollToPosition(chatList.size - 1)

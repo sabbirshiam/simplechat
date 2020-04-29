@@ -9,5 +9,9 @@ data class Message(
     @Json(name = "type")
     var type: Int,
     @Json(name = "imageUrl")
-    var imageUrl: String?
+    var imageUrl: String?,
+    @Json(name = "width")
+    var width: Int?,
+    @Json(name = "height")
+    var height: Int?
 )

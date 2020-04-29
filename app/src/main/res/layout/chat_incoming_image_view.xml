@@ -18,14 +18,15 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/incomingImage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
+        android:src="@drawable/fab_rounded_square_bg"
         android:layout_toEndOf="@id/personalImage"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/textView"
